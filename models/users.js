@@ -3,6 +3,10 @@ const jwt = require("jsonwebtoken");
 const Joi = require("joi");
 
 const Users = mongoose.Schema({
+    role:{
+        type : Number,
+        required: true
+    },
     name: {  
         type: String,
         required:true
@@ -31,7 +35,8 @@ Users.methods.generateAuthToken = function () {
 // //validation on input Data
 
 const validate = (user) => {
-    const schema = Joi.object({
+    const schema = Joi.object({ 
+        role: Joi.number().required(),
         name: Joi.string().required(),
         email: Joi.string().email().required(),
         password: Joi.string().required(),

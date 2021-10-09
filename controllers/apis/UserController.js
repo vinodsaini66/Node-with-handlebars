@@ -1,6 +1,7 @@
-const {User,validate} = require("../models/users");
+const {User,validate} = require("../../models/users");
 const bcrypt = require("bcrypt");
 const Joi = require("joi");
+const { success, error, validation } = require("../../helpers/responseApis");
 
 
 
@@ -12,6 +13,7 @@ exports.create = (req,res) => {
     }
     // create user
     const user = new User({
+        role:req.body.role,
         name : req.body.name,
         email: req.body.email,
         password : req.body.password,
@@ -33,7 +35,8 @@ exports.create = (req,res) => {
 exports.findAll =(req ,res) => {
     User.find()
     .then( data => {
-        res.send(data);
+        res.status(200)
+        .json(success("OK", { data: data}, res.statusCode));
     }).catch ( err =>{
         res.status(500).send({
             message: err.message 
@@ -44,7 +47,8 @@ exports.findAll =(req ,res) => {
 exports.findMe =  (req ,res) => {
     User.findById(req.user._id)
     .then( data => {
-        res.send(data);
+        res.status(200)
+        .json(success("OK", { data: data}, res.statusCode));
     }).catch ( err =>{
         res.status(500).send({
             message: err.message 

@@ -1,6 +1,6 @@
 var express = require('express');
 var router = express.Router();
-const usersController = require('../controllers/UserController');
+const usersController = require('../controllers/apis/UserController');
 const Auth = require("../middleware/auth");
 /* GET users listing. */
 
