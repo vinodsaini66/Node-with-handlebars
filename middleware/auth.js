@@ -14,3 +14,15 @@ exports.auth = (req,res,next) => {
         res.status(400).send("Invalid token");
     }
 };
+
+exports.admin = (req,res,next) => {
+    try{
+        if(!req.session.loggedIn){
+            res.redirect('/');
+        }
+        next();
+    } catch(error){
+        console.log(error);
+        res.status(400).send("Invalid token");
+    }
+};

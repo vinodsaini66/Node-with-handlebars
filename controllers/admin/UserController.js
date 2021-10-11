@@ -75,26 +75,47 @@ exports.register = async (req,res) => {
 };
 
 exports.login = async(req,res) => {
-
+     
     try{
             const { error } = validate_login (req.body);
-            if(error) return res.status(400).send(error.details[0].message);
+            if(error) {
+                req.flash('error', error.details[0].message);
+                return res.redirect('/');
+            };
 
-            const user =await User.findOne({email : req.body.email});
-            if(!user) return res.status(400).send("Invalid email");
+            const user =await User.findOne({email : req.body.email}).lean();
+            console.log(user);
+            if(!user) {
+                req.flash('error', 'User Not Present');
+                return res.redirect('/');
+            };
 
             const validPassword =await bcrypt.compare(
                 req.body.password,
                 user.password
             );
 
-            if(!validPassword) return res.status(400).send("Invalid email and Password");
+            if(!validPassword) {
+                req.flash('error', 'Password did not match confirmation!');
+                return res.redirect('/');
+            }
 
-            const token=user.generateAuthToken();
-            res.send(token);
+            req.session.user = user;
+            req.session.loggedIn = true;
+            res.locals.loggedIn = true;
+            req.flash('user',user);
+            req.flash('loggedIn',true);
+            console.log(user);
+            console.log(req.flash('loggedIn'));
+            
+            
+            res.redirect('dashboard');
+        //res.render('admin/dashboard', {page: 'Dashboard' ,title: 'Vira' ,list : user});
+      
     } catch( error){
-        console.log(error);
-        res.send("An error occured");
+        req.flash('error', error);
+                return res.redirect('/');
+        //res.send("An error occured");
     }
 
 };
